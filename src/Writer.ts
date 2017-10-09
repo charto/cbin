@@ -11,42 +11,43 @@ export class Writer {
 	u32(num: number) {
 		const data = this.data;
 		let pos = this.pos;
+		this.pos = pos + 4;
 
 		if(this.endian == Endian.little) {
-			data[pos++] = num;
-			data[pos++] = num >> 8;
-			data[pos++] = num >> 16;
-			data[pos++] = num >> 24;
+			data[pos] = num;
+			data[++pos] = num >> 8;
+			data[++pos] = num >> 16;
+			data[++pos] = num >> 24;
 		} else {
-			data[pos++] = num >> 24;
-			data[pos++] = num >> 16;
-			data[pos++] = num >> 8;
-			data[pos++] = num;
+			data[pos] = num >> 24;
+			data[++pos] = num >> 16;
+			data[++pos] = num >> 8;
+			data[++pos] = num;
 		}
 
-		this.pos = pos;
 		return(this);
 	}
 
 	f64(num: number) {
 		const data = this.data;
 		let pos = this.pos;
+		this.pos = pos + 8;
 
 		tempF64[0] = num;
 
 		if(this.endian == nativeEndian) {
 			data.set(bufF64, pos);
-			return(pos + 8);
 		} else {
-			data[pos++] = bufF64[7];
-			data[pos++] = bufF64[6];
-			data[pos++] = bufF64[5];
-			data[pos++] = bufF64[4];
-			data[pos++] = bufF64[3];
-			data[pos++] = bufF64[2];
-			data[pos++] = bufF64[1];
-			data[pos++] = bufF64[0];
-			return(pos);
+			data[pos] = bufF64[7];
+			data[++pos] = bufF64[6];
+			data[++pos] = bufF64[5];
+			data[++pos] = bufF64[4];
+			data[++pos] = bufF64[3];
+			data[++pos] = bufF64[2];
+			data[++pos] = bufF64[1];
+			data[++pos] = bufF64[0];
 		}
+
+		return(this);
 	}
 }

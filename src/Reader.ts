@@ -31,28 +31,28 @@ export class Reader {
 	f64() {
 		const data = this.data;
 		let pos = this.pos;
+		this.pos = pos + 8;
 
 		if(this.endian == nativeEndian) {
-			bufF64[0] = data[pos++];
-			bufF64[1] = data[pos++];
-			bufF64[2] = data[pos++];
-			bufF64[3] = data[pos++];
-			bufF64[4] = data[pos++];
-			bufF64[5] = data[pos++];
-			bufF64[6] = data[pos++];
-			bufF64[7] = data[pos++];
+			bufF64[0] = data[pos];
+			bufF64[1] = data[++pos];
+			bufF64[2] = data[++pos];
+			bufF64[3] = data[++pos];
+			bufF64[4] = data[++pos];
+			bufF64[5] = data[++pos];
+			bufF64[6] = data[++pos];
+			bufF64[7] = data[++pos];
 		} else {
-			bufF64[7] = data[pos++];
-			bufF64[6] = data[pos++];
-			bufF64[5] = data[pos++];
-			bufF64[4] = data[pos++];
-			bufF64[3] = data[pos++];
-			bufF64[2] = data[pos++];
-			bufF64[1] = data[pos++];
-			bufF64[0] = data[pos++];
+			bufF64[7] = data[pos];
+			bufF64[6] = data[++pos];
+			bufF64[5] = data[++pos];
+			bufF64[4] = data[++pos];
+			bufF64[3] = data[++pos];
+			bufF64[2] = data[++pos];
+			bufF64[1] = data[++pos];
+			bufF64[0] = data[++pos];
 		}
 
-		this.pos = pos;
 		return(tempF64[0]);
 	}
 
