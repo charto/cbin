@@ -16,15 +16,15 @@ export class Reader {
 		this.pos = pos + 4;
 
 		return(this.endian == CEndian.little ? (
-			data[pos] |
-			(data[pos + 1] << 8) |
+			 data[pos] |
+			(data[pos + 1] << 8)  |
 			(data[pos + 2] << 16) |
 			(data[pos + 3] << 24)
 		) : (
 			(data[pos] << 24) |
 			(data[pos + 1] << 16) |
-			(data[pos + 2] << 8) |
-			data[pos + 3]
+			(data[pos + 2] << 8)  |
+			 data[pos + 3]
 		));
 	}
 
