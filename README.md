@@ -5,17 +5,27 @@ cbin
 
 `cbin` provides a simple interface for reading and writing binary data in JavaScript.
 
+Features
+--------
+
+There are lots of similar implementations. The highlights of this one:
+
+- Works in browsers and Node.js.
+- Small and fast.
+- Really nice API.
+- Written in TypeScript.
+
 Usage
 -----
 
 There are two classes, `Reader` and `Writer`, with 3 constructor parameters:
 
 - `data` (required), a `Uint8Array` accessed through the class.
-- `pos` (optional), the current byte position (default is 0).
 - `endian` (optional), one of the following values:
   - `Endian.little` (0, the default)
   - `Endian.big` (1)
   - `Endian.native` (0 or 1 depending on the system)
+- `pos` (optional), the current byte position (default is 0).
 
 The parameters become correspondingly named class members.
 
@@ -48,6 +58,9 @@ const reader = new Reader(writer.data, Endian.big, 5);
 // Prints: -1
 console.log(reader.f64());
 ```
+
+For TypeScript, a const enum values `CEndian.little` and `CEndian.big` are provided.
+They compile to numeric constants for a tiny size and speed improvement.
 
 License
 =======

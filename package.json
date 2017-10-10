@@ -1,6 +1,6 @@
 {
   "name": "cbin",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Binary data IO",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
