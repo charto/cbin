@@ -3,21 +3,22 @@
 
 import { Writer } from './Writer';
 
-export enum Endian {
+export const enum CEndian {
 	big = 0,
 	little = 1
 }
 
-const testEndian = new Uint32Array(1);
+let native: CEndian;
+const test = new Uint32Array(1);
 
-export let nativeEndian: Endian;
+new Writer(new Uint8Array(test.buffer)).u32(0x01020304);
 
-new Writer(new Uint8Array(testEndian.buffer)).u32(0x01020304);
+if(test[0] == 0x01020304) native = CEndian.little;
+else if(test[0] == 0x04030201) native = CEndian.big;
+else throw(new Error('Middle endian is not supported'));
 
-if(testEndian[0] == 0x01020304) {
-	nativeEndian = Endian.little;
-} else if(testEndian[0] == 0x04030201) {
-	nativeEndian = Endian.big;
-} else {
-	throw(new Error('Middle endian is not supported'));
+export enum Endian {
+	big = CEndian.big,
+	little = CEndian.little,
+	native = native
 }

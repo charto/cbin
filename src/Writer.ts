@@ -1,19 +1,19 @@
 // This file is part of cbin, copyright (c) 2017 BusFaster Ltd.
 // Released under the MIT license, see LICENSE.
 
-import { Endian, nativeEndian } from './Endian';
+import { Endian, CEndian } from './Endian';
 import { tempF64, bufF64 } from './Reader';
 
 export class Writer {
 
-	constructor(public data: Uint8Array, public endian = Endian.little, public pos = 0) {}
+	constructor(public data: Uint8Array, public endian: Endian | CEndian = CEndian.little, public pos = 0) {}
 
 	u32(num: number) {
 		const data = this.data;
 		let pos = this.pos;
 		this.pos = pos + 4;
 
-		if(this.endian == Endian.little) {
+		if(this.endian == CEndian.little) {
 			data[pos] = num;
 			data[++pos] = num >> 8;
 			data[++pos] = num >> 16;
@@ -35,7 +35,7 @@ export class Writer {
 
 		tempF64[0] = num;
 
-		if(this.endian == nativeEndian) {
+		if(this.endian == Endian.native) {
 			data.set(bufF64, pos);
 		} else {
 			data[pos] = bufF64[7];

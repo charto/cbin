@@ -1,21 +1,21 @@
 // This file is part of cbin, copyright (c) 2017 BusFaster Ltd.
 // Released under the MIT license, see LICENSE.
 
-import { Endian, nativeEndian } from './Endian';
+import { Endian, CEndian } from './Endian';
 
 export const tempF64 = new Float64Array(1);
 export const bufF64 = new Uint8Array(tempF64.buffer);
 
 export class Reader {
 
-	constructor(public data: Uint8Array, public endian = Endian.little, public pos = 0) {}
+	constructor(public data: Uint8Array, public endian: Endian | CEndian = CEndian.little, public pos = 0) {}
 
 	u32() {
 		const data = this.data;
 		let pos = this.pos;
 		this.pos = pos + 4;
 
-		return(this.endian == Endian.little ? (
+		return(this.endian == CEndian.little ? (
 			data[pos] |
 			(data[pos + 1] << 8) |
 			(data[pos + 2] << 16) |
@@ -33,7 +33,7 @@ export class Reader {
 		let pos = this.pos;
 		this.pos = pos + 8;
 
-		if(this.endian == nativeEndian) {
+		if(this.endian == Endian.native) {
 			bufF64[0] = data[pos];
 			bufF64[1] = data[++pos];
 			bufF64[2] = data[++pos];

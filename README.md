@@ -12,7 +12,10 @@ There are two classes, `Reader` and `Writer`, with 3 constructor parameters:
 
 - `data` (required), a `Uint8Array` accessed through the class.
 - `pos` (optional), the current byte position (default is 0).
-- `endian` (optional), either `Endian.little` (0, the default) or `Endian.big` (1).
+- `endian` (optional), one of the following values:
+  - `Endian.little` (0, the default)
+  - `Endian.big` (1)
+  - `Endian.native` (0 or 1 depending on the system)
 
 The parameters become correspondingly named class members.
 
