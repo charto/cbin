@@ -3,7 +3,7 @@
 
 import { Writer } from './Writer';
 
-export const enum Endian {
+export enum Endian {
 	big = 0,
 	little = 1
 }

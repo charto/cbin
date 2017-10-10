@@ -29,7 +29,7 @@ Both methods update the `pos` member. The methods on `Writer` return `this`, whi
 Example:
 
 ```TypeScript
-import { Reader, Writer, Endian } from 'cbin';
+const { Reader, Writer, Endian } = require('cbin');
 
 const writer = new Writer(new Uint8Array(13), Endian.big);
 
