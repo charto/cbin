@@ -22,6 +22,7 @@ The parameters become correspondingly named class members.
 Accessing the members directly is fine, and the preferred way to access individual bytes.
 More convenient methods are provided for longer data types:
 
+- `u16` for unsigned 16-bit integer.
 - `u32` for unsigned 32-bit integer.
 - `f64` for 64-bit IEEE double precision float.
 

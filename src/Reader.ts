@@ -10,6 +10,18 @@ export class Reader {
 
 	constructor(public data: Uint8Array, public endian: Endian | CEndian = CEndian.little, public pos = 0) {}
 
+	u16() {
+		const data = this.data;
+		let pos = this.pos;
+		this.pos = pos + 4;
+
+		return(this.endian == CEndian.little ? (
+			 data[pos] | (data[pos + 1] << 8)
+		) : (
+			(data[pos] << 8) | data[pos + 1]
+		));
+	}
+
 	u32() {
 		const data = this.data;
 		let pos = this.pos;
