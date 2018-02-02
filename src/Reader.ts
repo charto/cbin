@@ -13,7 +13,7 @@ export class Reader {
 	u16() {
 		const data = this.data;
 		let pos = this.pos;
-		this.pos = pos + 4;
+		this.pos = pos + 2;
 
 		return(this.endian == CEndian.little ? (
 			 data[pos] | (data[pos + 1] << 8)
