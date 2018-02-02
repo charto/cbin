@@ -17,7 +17,9 @@ export class Reader {
 		public len = data.length
 	) {}
 
-	uSlow(count: number) {
+	slow(count: number): number;
+	slow(count: number, target: Uint8Array, targetPos: number, targetDelta: number): number;
+	slow(count: number, target?: Uint8Array, targetPos?: any, targetDelta?: number) {
 		const chunkList = this.chunkList || [];
 		let data: Uint8Array | number[] | undefined = this.data;
 		let pos = this.pos;
@@ -37,7 +39,10 @@ export class Reader {
 				this.len = len;
 			}
 
-			if(this.endian == CEndian.little) {
+			if(target) {
+				target[targetPos] = data[pos++];
+				targetPos += targetDelta!;
+			} else if(this.endian == CEndian.little) {
 				result |= data[pos++] << shift;
 			} else {
 				result = (result << 8) | data[pos++];
@@ -50,7 +55,7 @@ export class Reader {
 	}
 
 	u8() {
-		if(this.pos + 1 > this.len) return(this.uSlow(8));
+		if(this.pos + 1 > this.len) return(this.slow(8));
 
 		return(this.data[this.pos++]);
 	}
@@ -59,7 +64,7 @@ export class Reader {
 		const data = this.data;
 		const pos = this.pos;
 
-		if(pos + 2 > this.len) return(this.uSlow(16));
+		if(pos + 2 > this.len) return(this.slow(16));
 		this.pos = pos + 2;
 
 		return(this.endian == CEndian.little ? (
@@ -73,7 +78,7 @@ export class Reader {
 		const data = this.data;
 		const pos = this.pos;
 
-		if(pos + 4 > this.len) return(this.uSlow(32));
+		if(pos + 4 > this.len) return(this.slow(32));
 		this.pos = pos + 4;
 
 		return(this.endian == CEndian.little ? (
@@ -93,8 +98,15 @@ export class Reader {
 		const data = this.data;
 		let pos = this.pos;
 
-		// if(pos + 8 > this.len) return(this.fSlow(64));
-		this.pos = pos + 8;
+		if(pos + 8 > this.len) {
+			if(this.endian == Endian.native) {
+				this.slow(64, bufF64, 0, 1);
+			} else {
+				this.slow(64, bufF64, 7, -1);
+			}
+
+			return(tempF64[0]);
+		}
 
 		if(this.endian == Endian.native) {
 			bufF64[0] = data[pos];
@@ -116,6 +128,7 @@ export class Reader {
 			bufF64[0] = data[++pos];
 		}
 
+		this.pos = pos + 8;
 		return(tempF64[0]);
 	}
 

@@ -22,6 +22,15 @@ for(let i = 4; i >= 1; --i) {
 // Prints: 12345678
 console.log(reader.u32().toString(16));
 
+reader = new Reader();
+
+for(let i = 12; i >= 5; --i) {
+	reader.push([ writer.data[i] ]);
+}
+
+// Prints: -1
+console.log(reader.f64());
+
 try {
 	reader.u8();
 } catch(e) {
