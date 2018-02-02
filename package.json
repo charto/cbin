@@ -1,6 +1,6 @@
 {
   "name": "cbin",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Binary data IO",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -24,7 +24,7 @@
     "stream"
   ],
   "devDependencies": {
-    "@types/node": "^8.0.50",
-    "typescript": "^2.6.1"
+    "@types/node": "^9.4.0",
+    "typescript": "^2.7.1"
   }
 }
