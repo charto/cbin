@@ -6,13 +6,60 @@ import { Endian, CEndian } from './Endian';
 export const tempF64 = new Float64Array(1);
 export const bufF64 = new Uint8Array(tempF64.buffer);
 
+const empty = new Uint8Array(0);
+
 export class Reader {
 
-	constructor(public data: Uint8Array, public endian: Endian | CEndian = CEndian.little, public pos = 0) {}
+	constructor(
+		public data: Uint32Array | number[] = empty,
+		public endian: Endian | CEndian = CEndian.little,
+		public pos = 0,
+		public len = data.length
+	) {}
+
+	uSlow(count: number) {
+		const chunkList = this.chunkList || [];
+		let data: Uint8Array | number[] | undefined = this.data;
+		let pos = this.pos;
+		let len = this.len;
+		let result = 0;
+
+		for(let shift = 0; shift < count; shift += 8) {
+			while(pos >= len) {
+				data = chunkList[this.chunkNum];
+				if(!data) throw(new Error('End of input'));
+
+				pos = 0;
+				len = data.length;
+
+				chunkList[this.chunkNum++] = void 0;
+				this.data = data;
+				this.len = len;
+			}
+
+			if(this.endian == CEndian.little) {
+				result |= data[pos++] << shift;
+			} else {
+				result = (result << 8) | data[pos++];
+			}
+		}
+
+		this.pos = pos;
+
+		return(result);
+	}
+
+	u8() {
+		if(this.pos + 1 > this.len) return(this.uSlow(8));
+
+		return(this.data[this.pos++]);
+	}
 
 	u16() {
 		const data = this.data;
-		let pos = this.pos;
+		const pos = this.pos;
+
+		if(pos + 2 > this.len) return(this.uSlow(16));
 		this.pos = pos + 2;
 
 		return(this.endian == CEndian.little ? (
@@ -24,7 +71,9 @@ export class Reader {
 
 	u32() {
 		const data = this.data;
-		let pos = this.pos;
+		const pos = this.pos;
+
+		if(pos + 4 > this.len) return(this.uSlow(32));
 		this.pos = pos + 4;
 
 		return(this.endian == CEndian.little ? (
@@ -43,6 +92,8 @@ export class Reader {
 	f64() {
 		const data = this.data;
 		let pos = this.pos;
+
+		// if(pos + 8 > this.len) return(this.fSlow(64));
 		this.pos = pos + 8;
 
 		if(this.endian == Endian.native) {
@@ -67,5 +118,12 @@ export class Reader {
 
 		return(tempF64[0]);
 	}
+
+	push(chunk: Uint8Array | number[]) {
+		(this.chunkList || (this.chunkList = [])).push(chunk);
+	}
+
+	chunkList?: (Uint8Array | number[] | undefined)[];
+	chunkNum = 0;
 
 }
