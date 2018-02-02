@@ -8,6 +8,12 @@ export class Writer {
 
 	constructor(public data: Uint8Array, public endian: Endian | CEndian = CEndian.little, public pos = 0) {}
 
+	u8(num: number) {
+		this.data[this.pos++] = num;
+
+		return(this);
+	}
+
 	u16(num: number) {
 		const data = this.data;
 		let pos = this.pos;

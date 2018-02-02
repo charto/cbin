@@ -20,7 +20,7 @@ Usage
 
 There are two classes, `Reader` and `Writer`, with 3 constructor parameters:
 
-- `data` (required), a `Uint8Array` accessed through the class.
+- `data` (required for Writer), a `Uint8Array` accessed through the class.
 - `endian` (optional), one of the following values:
   - `Endian.little` (0, the default)
   - `Endian.big` (1)
@@ -30,8 +30,9 @@ There are two classes, `Reader` and `Writer`, with 3 constructor parameters:
 The parameters become correspondingly named class members.
 
 Accessing the members directly is fine, and the preferred way to access individual bytes.
-More convenient methods are provided for longer data types:
+Methods with buffer overflow checks are provided for various data types:
 
+- `u8` for unsigned 8-bit integer.
 - `u16` for unsigned 16-bit integer.
 - `u32` for unsigned 32-bit integer.
 - `f64` for 64-bit IEEE double precision float.
@@ -39,6 +40,11 @@ More convenient methods are provided for longer data types:
 The methods on `Reader` take no parameters. On `Writer` the only parameter is the value to write.
 
 Both methods update the `pos` member. The methods on `Writer` return `this`, which allows chaining them.
+
+Reading past the end of input throws an error.
+
+If input is streamed in chunks, pass them to the `push` method.
+Reading past the current chunk automatically switches to the next, if possible.
 
 Example:
 
