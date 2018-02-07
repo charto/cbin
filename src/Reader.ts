@@ -17,26 +17,54 @@ export class Reader {
 		public len = data.length
 	) {}
 
+	private consumeChunks(pos: number) {
+		const chunkList = this.chunkList || [];
+		let data: Uint8Array | number[] | undefined;
+		let len = this.len;
+
+		while(pos >= len) {
+			data = chunkList[this.chunkNum];
+			// Free memory used by consumed chunks.
+			chunkList[this.chunkNum++] = void 0;
+
+			if(!data) {
+				this.data = empty;
+				this.pos = 0;
+				this.len = 0;
+				throw(new Error('End of input'));
+			}
+
+			pos -= len;
+			len = data.length;
+
+			this.data = data;
+		}
+
+		this.len = len;
+		return(pos);
+	}
+
+	skip(bytes: number) {
+		let pos = this.pos + bytes;
+
+		if(pos >= this.len) pos = this.consumeChunks(pos);
+
+		this.pos = pos;
+	}
+
 	slow(count: number): number;
 	slow(count: number, target: Uint8Array, targetPos: number, targetDelta: number): number;
 	slow(count: number, target?: Uint8Array, targetPos?: any, targetDelta?: number) {
 		const chunkList = this.chunkList || [];
 		let data: Uint8Array | number[] | undefined = this.data;
-		let pos = this.pos;
-		let len = this.len;
+		let { pos, len } = this;
 		let result = 0;
 
 		for(let shift = 0; shift < count; shift += 8) {
-			while(pos >= len) {
-				data = chunkList[this.chunkNum];
-				if(!data) throw(new Error('End of input'));
-
-				pos = 0;
-				len = data.length;
-
-				chunkList[this.chunkNum++] = void 0;
-				this.data = data;
-				this.len = len;
+			if(pos >= len) {
+				pos = this.consumeChunks(pos);
+				len = this.len;
+				data = this.data;
 			}
 
 			if(target) {
@@ -50,7 +78,6 @@ export class Reader {
 		}
 
 		this.pos = pos;
-
 		return(result);
 	}
 
