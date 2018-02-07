@@ -19,38 +19,40 @@ export class Reader {
 
 	private consumeChunks(pos: number) {
 		const chunkList = this.chunkList || [];
-		let data: Uint8Array | number[] | undefined;
+		const chunkCount = chunkList.length;
+		let chunkNum = this.chunkNum;
+		let data: Uint8Array | number[] | undefined = empty;
 		let len = this.len;
 
 		while(pos >= len) {
 			this.chunkOffset += len;
-
-			data = chunkList[this.chunkNum];
-			// Free memory used by consumed chunks.
-			chunkList[this.chunkNum++] = void 0;
-
-			if(!data) {
-				this.data = empty;
-				this.pos = 0;
-				this.len = 0;
-				throw(new Error('End of input'));
-			}
-
 			pos -= len;
+
+			data = chunkList[chunkNum] || empty;
 			len = data.length;
 
-			this.data = data;
 			this.futureLen -= len;
+
+			if(chunkNum >= chunkCount) break;
+
+			// Free memory used by consumed chunks.
+			chunkList[chunkNum++] = void 0;
 		}
 
+		this.chunkNum = chunkNum;
+		this.data = data;
 		this.len = len;
+
 		return(pos);
 	}
 
 	skip(bytes: number) {
 		let pos = this.pos + bytes;
 
-		if(pos >= this.len) pos = this.consumeChunks(pos);
+		if(pos > this.len) {
+			pos = this.consumeChunks(pos);
+			if(pos > this.len) throw(new Error('End of input'));
+		}
 
 		this.pos = pos;
 	}
@@ -68,6 +70,8 @@ export class Reader {
 				pos = this.consumeChunks(pos);
 				len = this.len;
 				data = this.data;
+
+				if(pos >= len) throw(new Error('End of input'));
 			}
 
 			if(target) {
@@ -165,11 +169,9 @@ export class Reader {
 	push(chunk: Uint8Array | number[]) {
 		(this.chunkList || (this.chunkList = [])).push(chunk);
 		this.futureLen += chunk.length;
-
-		return(this.futureLen);
 	}
 
-	private futureLen = 0;
+	futureLen = 0;
 
 	chunkList?: (Uint8Array | number[] | undefined)[];
 	chunkNum = 0;
