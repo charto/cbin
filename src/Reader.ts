@@ -23,6 +23,8 @@ export class Reader {
 		let len = this.len;
 
 		while(pos >= len) {
+			this.chunkOffset += len;
+
 			data = chunkList[this.chunkNum];
 			// Free memory used by consumed chunks.
 			chunkList[this.chunkNum++] = void 0;
@@ -38,6 +40,7 @@ export class Reader {
 			len = data.length;
 
 			this.data = data;
+			this.futureLen -= len;
 		}
 
 		this.len = len;
@@ -161,9 +164,15 @@ export class Reader {
 
 	push(chunk: Uint8Array | number[]) {
 		(this.chunkList || (this.chunkList = [])).push(chunk);
+		this.futureLen += chunk.length;
+
+		return(this.futureLen);
 	}
+
+	private futureLen = 0;
 
 	chunkList?: (Uint8Array | number[] | undefined)[];
 	chunkNum = 0;
+	chunkOffset = 0;
 
 }
