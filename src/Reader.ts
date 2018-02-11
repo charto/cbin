@@ -142,6 +142,8 @@ export class Reader {
 			return(tempF64[0]);
 		}
 
+		this.pos = pos + 8;
+
 		if(this.endian == Endian.native) {
 			bufF64[0] = data[pos];
 			bufF64[1] = data[++pos];
@@ -162,7 +164,6 @@ export class Reader {
 			bufF64[0] = data[++pos];
 		}
 
-		this.pos = pos + 8;
 		return(tempF64[0]);
 	}
 
